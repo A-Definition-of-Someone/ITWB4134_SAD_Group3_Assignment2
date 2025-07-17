@@ -1,0 +1,32 @@
+:root{
+            --DarkGray: #173D4D;
+            --SalmonPink: #FF869D;
+            --LightGray: #7D8C9B;
+            --DarkerBlue: #1D293B;
+            --SlightBlue: #5C79A3;
+            --LightGreen: #43BA43;
+            --OceanBlue: #198CC4;
+            --DarkPurple: #FFA7FF;
+            --Orange: #E96B12;
+            --DarkGreen: #97D077;
+            --LighterOrange: #FF9164;
+
+            --FontFamily: Helvetica, Arial;
+
+            --FontSizeNavbar: 3vmin;
+            --Header60PXApproximate: 5.5vmin;
+            --Header50PXApproximate: 5vmin;
+            --Header45PXApproximate: 4.525vmin;
+            --Header40Approximate: 4.5vmin;
+            --Header30Approximate: 4vmin;
+
+            --BorderWhite: 1pt solid white;
+            --BorderLighterLightGray: 1pt solid #A9B8C7;
+            --BorderLighterGreen: 1pt solid #82CD82;
+            --BorderLighterOceanBlue: 1pt solid #51AFE7;
+            --BorderLighterDarkPurple: 1pt solid #EFC0FF;
+            --BorderLighterOrange: 1pt solid #FF9164;
+            --BorderLighterDarkerBlue: 1pt solid #5C79A3;
+            --BorderDarkGreen: 1pt solid #97D077;
+            --BorderOrange: 1pt solid #E96B12;
+        }

@@ -1,0 +1,390 @@
+<?php
+enum Privilege: string{
+    case Normal = "Normal";
+    case Manager = "Manager";
+}
+
+enum AccountSearch: string{
+    case Username = "Username";
+    case Password = "Password";
+    case Token = "Token";
+}
+
+class Grade_Allocation implements IteratorAggregate{
+    private $gradeallocations = [];
+    private string $leavetype;
+    private mysqli $mysqli;
+
+    private function __construct(mysqli $mysqli, $gradeallocations = [], string $leavetype)
+    {
+        $this->mysqli = $mysqli;
+        $this->gradeallocations = $gradeallocations;
+        $this->leavetype = $leavetype;
+    }
+
+    static function queryGradeAllocation(mysqli $mysqli, string $leavetype){
+        $GradeAllocation = null;
+        $stmt_GradeAllocation = mysqli_prepare($mysqli, "SELECT * FROM Grade_Allocation WHERE LeaveCategory = ?");
+        mysqli_stmt_bind_param($stmt_GradeAllocation, "s", $leavetype);
+        mysqli_stmt_execute($stmt_GradeAllocation);
+        $Result = mysqli_stmt_get_result($stmt_GradeAllocation);
+        $_GradeAllocations = [];
+        while ($gradeallocation = mysqli_fetch_assoc($Result)) {
+            $_GradeAllocations[] = $gradeallocation;
+        }
+        if (mysqli_num_rows($Result) > 0)
+        $GradeAllocation = new Grade_Allocation($mysqli, $_GradeAllocations, $leavetype);
+        return $GradeAllocation;
+    }
+
+    static function initGradeAllocation(mysqli $mysqli, string $leavetype){
+        $grades = Grade::queryGrades($mysqli);
+        $_gradeallocations = "";
+        $_tobeUnpacked = [];
+        $_stringtypes = "";
+        foreach ($grades as $grade) {
+            $_gradeallocations .= "(" . "?" . "," . "?" . "," . "?" . ")"; 
+            $_gradeallocations .= ",";
+            
+            $_tobeUnpacked[] = $grade;
+            $_stringtypes .= "s"; 
+            $_tobeUnpacked[] = 0;
+            $_stringtypes .= "i"; 
+            $_tobeUnpacked[] = $leavetype;
+            $_stringtypes .= "s"; 
+        }
+        $_gradeallocations[strlen($_gradeallocations) - 1] = ";";
+
+        #throw new Exception("INSERT INTO Grade_Allocation (EmployeeGrade, Allocations, LeaveCategory) VALUES " . $_gradeallocations, 1);
+        
+        $stmt_GradeAllocation = mysqli_prepare($mysqli, "INSERT INTO Grade_Allocation (EmployeeGrade, Allocations, LeaveCategory) VALUES " . $_gradeallocations);
+        mysqli_stmt_bind_param($stmt_GradeAllocation, $_stringtypes, ...$_tobeUnpacked);
+        $status = mysqli_stmt_execute($stmt_GradeAllocation);
+        return $status;
+    }
+
+    static function addGradeAllocation(mysqli $mysqli, $leavetype){
+        #Get list of Grade
+        $grades = Grade::queryGrades($mysqli);
+        #Get list of GradeAllocation
+        $stmt_GradeAllocation = mysqli_prepare($mysqli, "SELECT EmployeeGrade FROM Grade_Allocation");
+        mysqli_stmt_execute($stmt_GradeAllocation);
+        $Result = mysqli_stmt_get_result($stmt_GradeAllocation);
+        $_GradeAllocations = [];
+        while ($gradeallocation = mysqli_fetch_assoc($Result)) {
+            $_GradeAllocations[] = $gradeallocation["EmployeeGrade"];
+        }
+        
+        #Filter out Grade in GradeAllocation based on leavetype from Grade array
+        $grades = iterator_to_array($grades, false);
+        foreach($_GradeAllocations as $GA){
+            $grades = array_filter($grades, function ($_grade) use ($GA){
+                return $_grade !== $GA;
+            });
+        }
+
+        #throw new Exception(implode(", ", $_GradeAllocations), 1);
+
+        #Finally add
+        $_gradeallocations = "";
+        $_tobeUnpacked = [];
+        $_stringtypes = "";
+        foreach ($grades as $grade) {
+            $_gradeallocations .= "(" . "?" . "," . "?" . "," . "?" . ")"; 
+            $_gradeallocations .= ",";
+            
+            $_tobeUnpacked[] = $grade;
+            $_stringtypes .= "s"; 
+            $_tobeUnpacked[] = 0;
+            $_stringtypes .= "i"; 
+            $_tobeUnpacked[] = $leavetype;
+            $_stringtypes .= "s"; 
+        }
+        $_gradeallocations[strlen($_gradeallocations) - 1] = ";";
+
+        #throw new Exception("INSERT INTO Grade_Allocation (EmployeeGrade, Allocations, LeaveCategory) VALUES " . $_gradeallocations, 1);
+        $status = true;
+        if(strlen($_gradeallocations) === 0){
+            return $status;
+        }
+        
+        $stmt_GradeAllocation = mysqli_prepare($mysqli, "INSERT INTO Grade_Allocation (EmployeeGrade, Allocations, LeaveCategory) VALUES " . $_gradeallocations);
+        mysqli_stmt_bind_param($stmt_GradeAllocation, $_stringtypes, ...$_tobeUnpacked);
+        $status = mysqli_stmt_execute($stmt_GradeAllocation);
+        return $status;
+    }
+
+    static function setAllocation(mysqli $mysqli, string $grade ,string $leavetype, int $allocation){
+        $stmt_GradeAllocation = mysqli_prepare($mysqli, "UPDATE Grade_Allocation SET Allocations = ? WHERE EmployeeGrade = ? AND LeaveCategory = ?");
+        mysqli_stmt_bind_param($stmt_GradeAllocation, "iss", $allocation , $grade, $leavetype);
+        $status = mysqli_stmt_execute($stmt_GradeAllocation);
+        return $status;
+    }
+
+    function getLeaveTyoe(){return $this->leavetype;}
+
+    function getIterator(): Traversable {return new ArrayIterator($this->gradeallocations);}
+}
+
+class LeaveType implements IteratorAggregate{
+    private $LeaveCategory = [];
+    private mysqli $mysqli;
+
+    private function __construct(mysqli $mysqli, $LeaveCategory = []){
+        $this->LeaveCategory = $LeaveCategory;
+        $this->mysqli = $mysqli;
+    }
+
+    static function queryLeaveType(mysqli $mysqli){
+        $_LeaveType = null;
+        $stmt_LeaveType = mysqli_prepare($mysqli, "SELECT LeaveCategory FROM LeaveType");
+        mysqli_stmt_execute($stmt_LeaveType);
+        $Result = mysqli_stmt_get_result($stmt_LeaveType);
+        $LeaveCategories = [];
+        while ($leavecategory = mysqli_fetch_assoc($Result)) {
+            $LeaveCategories[] = $leavecategory["LeaveCategory"];
+        }
+        $_LeaveType = new LeaveType($mysqli, $LeaveCategories);
+        return $_LeaveType;
+    }
+
+    static function addLeaveType(mysqli $mysqli, string $LeaveCategory, ?LeaveType $LT){
+        $stmt_LeaveType = mysqli_prepare($mysqli, "INSERT INTO LeaveType (LeaveCategory) VALUES (?)");
+        mysqli_stmt_bind_param($stmt_LeaveType, "s", $LeaveCategory);
+        $status = mysqli_stmt_execute($stmt_LeaveType);
+        if(!$status){
+            return $status;
+        }
+        if($LT){
+            $LT->LeaveCategory[] = $LeaveCategory;
+        }
+        return $status;
+    }
+
+    static function deleteLeaveType(mysqli $mysqli, string $LeaveCategory, ?LeaveType $LT){
+        $stmt_LeaveType = mysqli_prepare($mysqli, "DELETE FROM LeaveType WHERE LeaveCategory = ?");
+        mysqli_stmt_bind_param($stmt_LeaveType, "s", $LeaveCategory);
+        $status = mysqli_stmt_execute($stmt_LeaveType);
+        if(!$status){
+            return $status;
+        }
+        if($LT){
+            $LT->LeaveCategory = array_filter($LT->LeaveCategory, function($_LeaveCategory) use($LeaveCategory){
+                return $_LeaveCategory !== $LeaveCategory;
+            });
+        }
+        return $status;
+    }
+
+    static function isExistLeaveType(mysqli $mysqli, string $LeaveCategory){
+        $status = false;
+        $stmt_LeaveType = mysqli_prepare($mysqli, "SELECT LeaveCategory FROM LeaveType WHERE LeaveCategory = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmt_LeaveType, "s", $LeaveCategory);
+        mysqli_stmt_execute($stmt_LeaveType);
+        mysqli_stmt_store_result($stmt_LeaveType); #Store results before calling bind
+        if(mysqli_stmt_num_rows($stmt_LeaveType) > 0){
+            $status = true;
+        }
+
+        return $status;
+    }
+
+    function getIterator(): Traversable {return new ArrayIterator($this->LeaveCategory);}
+}
+
+class Grade implements IteratorAggregate{
+    private $Grades = [];
+
+    private function __construct($Grades = []){
+        $this->Grades = $Grades;
+    }
+
+    static function queryGrades(mysqli $mysqli){
+        $_Grade = null;
+        $stmt_Grades = mysqli_prepare($mysqli, "SELECT EmployeeGrade FROM Grade");
+        mysqli_stmt_execute($stmt_Grades);
+        $Result = mysqli_stmt_get_result($stmt_Grades);
+        $Grades = [];
+        while ($grade = mysqli_fetch_assoc($Result)) {
+            $Grades[] = $grade["EmployeeGrade"];
+        }
+        $_Grade = new Grade($Grades);
+        return $_Grade;
+    }
+
+    function getIterator(): Traversable{return new ArrayIterator($this->Grades);}
+}
+
+class Employee{
+    private string $EmployeeID;
+    private string $EmployeeName;
+    private string $EmployeeGrade;
+    private mysqli $mysqli;
+
+    private function __construct(mysqli $mysqli, string $EmployeeID, string $EmployeeName, string $EmployeeGrade)
+    {
+        $this->mysqli = $mysqli;
+        $this->EmployeeID =  $EmployeeID;
+        $this->EmployeeName = $EmployeeName;
+        $this->EmployeeGrade = $EmployeeGrade;
+    }
+
+    function getEmployeeID(){return $this->EmployeeID;}
+
+    static function createEmployee(mysqli $mysqli, string $EmployeeID, string $EmployeeName, string $EmployeeGrade){
+        $Emp = null;
+
+        $stmt_Employee = mysqli_prepare($mysqli, "INSERT INTO Employee (EmployeeID, EmployeeName, EmployeeGrade) VALUES (?, ?, ?)");
+        mysqli_stmt_bind_param($stmt_Employee, "sss", $EmployeeID, $EmployeeName, $EmployeeGrade);
+        
+        if (mysqli_stmt_execute($stmt_Employee)){
+            $Emp = new Employee($mysqli, $EmployeeID, $EmployeeName, $EmployeeGrade);
+        }
+
+        return $Emp;
+    }
+    static function searchEmployee(mysqli $mysqli, string $EmployeeID = "", string $EmployeeName = ""){
+        $stmt = "";
+        $input = "";
+        if ($EmployeeID !== ""){
+            $stmt = "SELECT * FROM Employee WHERE EmployeeID = ? LIMIT 1";
+            $input = $EmployeeID;
+        }else if ($EmployeeName !== ""){
+            $stmt = "SELECT * FROM Employee WHERE EmployeeName = ? LIMIT 1";
+            $input = $EmployeeName;
+        }else{
+            return null;
+        }
+
+        $stmt_Employee = mysqli_prepare($mysqli, $stmt);
+        mysqli_stmt_bind_param($stmt_Employee, "s", $input);
+        mysqli_stmt_execute($stmt_Employee);
+        mysqli_stmt_store_result($stmt_Employee); #Store results before calling bind
+        mysqli_stmt_bind_result($stmt_Employee, $EmployeeID, $EmployeeName, $EmployeeGrade); #Prepare variables for binding
+
+        if(mysqli_stmt_num_rows($stmt_Employee) > 0){
+            mysqli_stmt_fetch($stmt_Employee); #Fetch results into the variables declared for binding earlier
+            return new Employee($mysqli, $EmployeeID, $EmployeeName, $EmployeeGrade);
+        }
+
+        return null;
+    }
+    
+}
+
+class Account{
+    private string $Username;
+    private string $Password;
+    private string $Token;
+    private Privilege $Privilege;
+    private Employee $Emp;
+    private mysqli $mysqli;
+
+    /***
+     * Create Account
+     */
+    private function __construct(mysqli $mysqli,string $Username, string $Password, string $Token, Privilege $Privilege)
+    {
+        $this->mysqli = $mysqli;
+        $this->Token = $Token;
+        $this->Privilege = $Privilege;
+        $this->Username = $Username;
+        $this->Password = $Password;   
+    }
+    
+
+    function getToken(){return $this->Token;}
+    function setToken(string $Token){
+        $stmt_Account = mysqli_prepare($this->mysqli, "UPDATE Account SET Token = ? WHERE Username = ?");
+        mysqli_stmt_bind_param($stmt_Account, "ss", $Token, $this->Username);
+        $status = mysqli_stmt_execute($stmt_Account);
+        if ($status){
+            $this->Token = $Token;
+        }
+
+        return $status;
+    }
+    function getPrivilege(){return $this->Privilege;}
+    function setPrivilege(Privilege $Privilege){
+        $stmt_Account = mysqli_prepare($this->mysqli, "UPDATE Account SET Privilege = ? WHERE Username = ?");
+        mysqli_stmt_bind_param($stmt_Account, "ss", $Privilege->value, $this->Username);
+        $status = mysqli_stmt_execute($stmt_Account);
+        if ($status){
+            $this->Privilege = $Privilege;
+        }
+
+        return $status;
+    }
+    function getEmployee(){return $this->Emp;}
+    function setEmployee(Employee $Emp){
+        $stmt_Account = mysqli_prepare($this->mysqli, "UPDATE Account SET EmployeeID = ? WHERE Username = ?");
+        mysqli_stmt_bind_param($stmt_Account, "ss", $Emp->getEmployeeID(), $this->Username);
+        $status = mysqli_stmt_execute($stmt_Account);
+        if ($status){
+            $this->Emp = $Emp;
+        }
+
+        return $status;
+    }
+
+    static function searchAccount_UsernamePassword(mysqli $mysqli,string $Username, string $Password){
+        $stmt_Account = mysqli_prepare($mysqli, "SELECT * FROM Account WHERE Username = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmt_Account, "s", $Username);
+        mysqli_stmt_execute($stmt_Account);
+        mysqli_stmt_store_result($stmt_Account); #Store results before calling bind
+        mysqli_stmt_bind_result($stmt_Account,$Username, $Password2, $Token, $Privilege, $EmployeeGrade); #Prepare variables for binding
+
+        if(mysqli_stmt_num_rows($stmt_Account) > 0){
+            mysqli_stmt_fetch($stmt_Account); #Fetch results into the variables declared for binding earlier
+            if (password_verify($Password, $Password2))
+            return new Account($mysqli, $Username, $Password2, $Token ?? "", Privilege::tryFrom($Privilege) ,$EmployeeGrade);
+        }
+
+        return null;
+    }
+
+    static function searchAccount_Token(mysqli $mysqli,string $Token){
+        $stmt_Account = mysqli_prepare($mysqli, "SELECT * FROM Account WHERE Token = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmt_Account, "s", $Token);
+        mysqli_stmt_execute($stmt_Account);
+        mysqli_stmt_store_result($stmt_Account); #Store results before calling bind
+        mysqli_stmt_bind_result($stmt_Account,$Username, $Password, $Token, $Privilege, $EmployeeGrade); #Prepare variables for binding
+
+        if(mysqli_stmt_num_rows($stmt_Account) > 0){
+            mysqli_stmt_fetch($stmt_Account); #Fetch results into the variables declared for binding earlier
+            return new Account($mysqli, $Username, $Password, $Token, Privilege::tryFrom($Privilege) ,$EmployeeGrade);
+        }
+
+        return null;
+    }
+
+    static function createAccount(mysqli $mysqli,string $Username, string $Password, string $Token, Privilege $Privilege)
+    {
+
+        $Acc = null;
+        $Password = password_hash($Password, PASSWORD_BCRYPT);
+        $privilege = $Privilege->value;
+        if($Token === ""){
+            $stmt = "INSERT INTO Account (Username, `Password`, Privilege) VALUES (?, ?, ?)";
+            $stmt_Account = mysqli_prepare($mysqli, $stmt);
+            mysqli_stmt_bind_param($stmt_Account, "sss", $Username, $Password, $privilege);
+            
+            if (mysqli_stmt_execute($stmt_Account)){
+                $Acc = new Account($mysqli, $Username, $Password, $Token, $Privilege);
+            }
+        }else{
+            $stmt = "INSERT INTO Account (Username, `Password`, Token, Privilege) VALUES (?, ?, ?, ?)";
+            $stmt_Account = mysqli_prepare($mysqli, $stmt);
+            mysqli_stmt_bind_param($stmt_Account, "ssss", $Username, $Password, $Token, $privilege);
+            
+            if (mysqli_stmt_execute($stmt_Account)){
+                $Acc = new Account($mysqli, $Username, $Password, $Token, $Privilege);
+            }
+        }
+
+        return $Acc;
+    }
+
+    
+}
+?>

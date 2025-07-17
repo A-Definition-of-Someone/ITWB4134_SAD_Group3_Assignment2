@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Template</title>
+    <style>
+        :root{
+            --DarkGray: #173D4D;
+            --SalmonPink: #FF869D;
+            --LightGray: #7D8C9B;
+            --DarkerBlue: #1D293B;
+            --SlightBlue: #5C79A3;
+
+            --FontFamily: Helvetica, Arial;
+
+            --FontSizeNavbar: 3vmin;
+        }
+        html, body{
+            /*Margin*/
+            margin: 0;
+
+            /*Padding*/
+            padding: 0;
+        }
+
+        body{
+            display: grid;
+            background-color: var(--DarkGray);
+
+            /*Font*/
+            font-family: var(--FontFamily);
+        }
+
+        #Navbar{
+            display: grid;
+            height: 9.2592dvh;
+            width: inherit;
+            background-color: var(--LightGray);
+
+            /*Grid Configuration*/
+            grid-template-rows: 100%;
+            grid-template-columns: 1fr min-content;
+            grid-auto-flow: column;
+            column-gap: 1.5dvw;
+
+            /*Font*/
+            font-size: var(--FontSizeNavbar);
+
+            /*Padding*/
+            padding-right: 1dvw;
+            padding-left: 1dvw;
+        }
+
+        #Navbar #LinkContainer{
+            display: grid;
+
+            /*Grid Configuration*/
+            grid-template-rows: 100%;
+            grid-auto-columns: min-content;
+            grid-auto-flow: column;
+            column-gap: 1dvw;
+        }
+
+        #LinkContainer a{
+            width: fit-content;
+            height: fit-content;
+            background-color: var(--SalmonPink);
+
+            /*Grid Config*/
+            place-self: center center;
+
+            /*Text*/
+            text-wrap: nowrap;
+            text-decoration: none;
+            color: black;
+
+            /*Border*/
+            border-radius: 10px 10px 10px 10px;
+
+            /*Font*/
+            font-size: var(--FontSizeNavbar);
+            font-weight: bold;
+
+            /*Padding*/
+            padding-top: 1dvh;
+            padding-bottom: 1dvh;
+            padding-left: 1.5dvw;
+            padding-right: 1.5dvw;
+        }
+
+        #LinkContainer a:hover{
+            background-color: white;
+        }
+
+        #LogOut{
+            height: fit-content;
+            background-color: var(--DarkerBlue);
+
+            /*Grid Config*/
+            place-self: center center;
+
+            /*Text*/
+            text-wrap: nowrap;
+            color: white;
+
+            /*Border*/
+            border-color: var(--SlightBlue);
+            border-radius: 10px 10px 10px 10px;
+
+            /*Font*/
+            font-size: var(--FontSizeNavbar);
+            font-weight: bold;
+
+            /*Padding*/
+            padding-top: 1dvh;
+            padding-bottom: 1dvh;
+            padding-left: 1.5dvw;
+            padding-right: 1.5dvw;
+        }
+
+
+    </style>
+</head>
+<body>
+    <nav id="Navbar">
+        <div id="LinkContainer">
+            <a href="http://">Register Employee</a>
+            <a href="http://">Manage Grade</a>
+            <a href="">Manage Leave Type</a>
+            <a href="">Manage Employee Leave</a>
+        </div>
+        <button id="LogOut">Log Out</button>
+    </nav>
+</body>
+</html>
