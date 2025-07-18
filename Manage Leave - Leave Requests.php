@@ -533,7 +533,11 @@ U = Used Leave Allocation</pre>
         <?php
         foreach($leaverequests as $lr){
             ?>
-        <div class="ListEmployeesLeave" data-mode="0" data-appleaveid = "<?php echo $lr[Leave_Application_Columns::LeaveApplicationID->value]; ?>">
+        <div class="ListEmployeesLeave" data-mode="0" 
+        data-appleaveid = "<?php echo $lr[Leave_Application_Columns::LeaveApplicationID->value]; ?>"
+        data-empID = "<?php echo $lr[Leave_Application_Columns::EmployeeID->value]; ?>"
+        data-leaveCategory = "<?php echo $lr[Leave_Application_Columns::LeaveCategory->value]; ?>"
+        >
             <span class="Grade"><?php echo $lr[Leave_Application_Columns::EmployeeGrade->value]; ?></span>
             <span class="EmployeeName"><?php echo $lr[Leave_Application_Columns::EmployeeName->value]; ?></span>
             <span class="LeaveType"><?php echo $lr[Leave_Application_Columns::LeaveCategory->value]; ?></span>
@@ -600,8 +604,10 @@ U = Used Leave Allocation</pre>
                 let ApproveBTN = Row.querySelector(".Status button:nth-child(1)");
                 let RejectBTN = Row.querySelector(".Status button:nth-child(2)");
 
-                ApproveBTN.addEventListener("click", ev=>alert(Row.dataset.appleaveid));
-                RejectBTN.addEventListener("click", ev=>alert(Row.dataset.appleaveid));
+                ApproveBTN.addEventListener("click", ev=>approveLeaveRequest.call(
+                    Row, ev, Row.dataset.appleaveid, Row.dataset.empid, Row.dataset.leavecategory));
+                RejectBTN.addEventListener("click", ev=>rejectLeaveRequest.call(
+                    Row, ev, Row.dataset.appleaveid, Row.dataset.empid, Row.dataset.leavecategory));
             });
 
         /**Employees' Latest Approved Leave */
@@ -612,6 +618,112 @@ U = Used Leave Allocation</pre>
             Note.dataset.hidden = NoteState[this.value];
             StatusHeader.dataset.status = this.value;
             StatusHeader.innerText = StatusState[this.value];
+        }
+
+        async function approveLeaveRequest(ev, appleaveid, empID, leaveCategory){
+            const url = "/ITWB4134_SAD_Group3_Assignment2/AcceptRejectLeaveApplication.php";
+            const formData = new FormData();
+            formData.append("appleaveid", appleaveid);
+            formData.append("LeaveStatus", "Approved");
+            formData.append("empID", empID);
+            formData.append("leaveCategory", leaveCategory);
+            const response = await fetch(url, {
+                method: "POST",
+                body: formData
+            });
+
+            const textObject = await response.text();
+            if(textObject === "Success"){ //Refresh list for approved leave
+                LeaveContainer.removeChild(this);
+                await reloadApprovedLeaveList();
+            }else{
+                alert(textObject);
+            }
+        }
+
+        async function rejectLeaveRequest(ev, appleaveid, empID, leaveCategory){
+            const url = "/ITWB4134_SAD_Group3_Assignment2/AcceptRejectLeaveApplication.php";
+            const formData = new FormData();
+            formData.append("appleaveid", appleaveid);
+            formData.append("LeaveStatus", "Rejected");
+            formData.append("empID", empID);
+            formData.append("leaveCategory", leaveCategory);
+            const response = await fetch(url, {
+                method: "POST",
+                body: formData
+            });
+
+            const textObject = await response.text();
+            if(textObject === "Success"){ //Refresh list for approved leave
+                LeaveContainer.removeChild(this);
+                await reloadApprovedLeaveList();
+            }else{
+                alert(textObject);
+            }
+        }
+
+        async function reloadApprovedLeaveList(){
+            const url = "/ITWB4134_SAD_Group3_Assignment2/Query Approved Leave List.php";
+            const response = await fetch(url);
+
+            const jsonObject = await response.json();
+            
+            let newApprovedRow = Array.from(jsonObject.Rows || []);
+            console.log("reload: " + jsonObject.Rows[0].EmployeeGrade);
+            
+            if(newApprovedRow.length > 0){//Refresh list for approved leave
+                let ListEmployeesLeave_Approved = Array.from(document.querySelectorAll(".ListEmployeesLeave[data-mode = '1']") || []);
+                    ListEmployeesLeave_Approved.forEach(Row=>{
+                        LeaveContainer.removeChild(Row);
+                    });
+                newApprovedRow.forEach(Row=>{
+                    LeaveContainer.appendChild(ApprovedLeaveElement(Row.EmployeeGrade, 
+                    Row.EmployeeName, Row.LeaveCategory, Row.StartDate, Row.EndDate, Row.Allocations, Row.UsedAllocations));
+                });
+
+            }else if (jsonObject.Status !== undefined || jsonObject.Status !== NULL){
+                alert(jsonObject.Status);
+            }
+                
+        }
+
+        function ApprovedLeaveElement(Grade, EmployeeName, LeaveType, From, To, Allocations, UsedAllocations){
+            let listemployeesleave = document.createElement("div");
+                listemployeesleave.classList.add("ListEmployeesLeave");
+                listemployeesleave.dataset.mode = "1";
+            let grade = document.createElement("span");
+                grade.classList.add("Grade");
+                grade.innerText = Grade;
+            let employeename = document.createElement("span");
+                employeename.classList.add("EmployeeName");
+                employeename.innerText = EmployeeName;
+            let leavetype = document.createElement("span");
+                leavetype.classList.add("LeaveType");
+                leavetype.innerText = LeaveType;
+            let from = document.createElement("span");
+                from.classList.add("From");
+                from.innerText = From;
+            let to = document.createElement("span");
+                to.classList.add("To");
+                to.innerText = To;
+            let status = document.createElement("span");
+                status.classList.add("Status");
+            let allocation = document.createElement("button");
+                allocation.innerText = Allocations;
+            let usedallocation = document.createElement("button");
+                usedallocation.innerText = UsedAllocations;
+
+                status.appendChild(allocation);
+                status.appendChild(usedallocation);
+
+                listemployeesleave.appendChild(grade);
+                listemployeesleave.appendChild(employeename);
+                listemployeesleave.appendChild(leavetype);
+                listemployeesleave.appendChild(from);
+                listemployeesleave.appendChild(to);
+                listemployeesleave.appendChild(status);
+
+                return listemployeesleave;
         }
     </script>
 </body>

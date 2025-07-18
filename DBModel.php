@@ -76,6 +76,15 @@ class Employee_Allocation implements IteratorAggregate{
         }
         return new Employee_Allocation($mysqli, $_employeeallocation);
     }
+
+    static function incrementUsedAllocations(mysqli $mysqli, string $employeeID, string $leaveCategory){
+        $sql1 = "INSERT INTO Employee_Allocation (EmployeeID, LeaveCategory) VALUES (?, ?) ON DUPLICATE KEY UPDATE UsedAllocations = UsedAllocations + 1";
+        #throw new Exception("incrementUsedAllocations " . $employeeID ." " . $leaveCategory, 1);
+        $stmt_EmployeeAllocation = mysqli_prepare($mysqli, $sql1);
+        mysqli_stmt_bind_param($stmt_EmployeeAllocation, "ss", $employeeID, $leaveCategory);
+        $status = mysqli_stmt_execute($stmt_EmployeeAllocation);
+        return $status;
+    }
     
     function getIterator(): Traversable {return new ArrayIterator($this->employeeallocation);}
 }
@@ -119,9 +128,8 @@ class Leave_Application implements IteratorAggregate{
     }
 
     static function setStatusEmployeeLeaveApplication(mysqli $mysqli, string $LeaveApplicationID, LeaveStatus $approvalstatus){
-        $stmt_LeaveApplication = mysqli_prepare($mysqli, "UPDATE Leave_Application SET". 
-        Leave_Application_Columns::LeaveStatus ." = (?)" . 
-        "WHERE Leave_Application." . Leave_Application_Columns::LeaveApplicationID->value . "= ?");
+        $stmt_LeaveApplication = mysqli_prepare($mysqli, "UPDATE Leave_Application SET LeaveStatus = ? " . 
+        "WHERE Leave_Application." . Leave_Application_Columns::LeaveApplicationID->value . " = ?");
         $_approvalstatus = $approvalstatus->value;
         mysqli_stmt_bind_param($stmt_LeaveApplication, "ss", $_approvalstatus, $LeaveApplicationID);
         $status = mysqli_stmt_execute($stmt_LeaveApplication);
