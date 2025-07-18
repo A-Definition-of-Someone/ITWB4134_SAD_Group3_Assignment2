@@ -10,12 +10,133 @@ enum AccountSearch: string{
     case Token = "Token";
 }
 
+enum LeaveStatus: string{
+    case Approved = "Approved";
+    case Rejected = "Rejected";
+    case Pending = "Pending";
+}
+
+enum Leave_Application_Columns: string{
+    case LeaveApplicationID = "LeaveApplicationID";
+    case EmployeeID = "EmployeeID";
+    case LeaveCategory = "LeaveCategory";
+    case StartDate = "StartDate";
+    case EndDate = "EndDate";
+    case LeaveStatus = "LeaveStatus";
+    case ApprovedBy = "ApprovedBy";
+
+    /**From Employee */
+    case EmployeeName = "EmployeeName";
+    case EmployeeGrade = "EmployeeGrade";
+}
+
+enum Employee_Allocation_Columns: string{
+    case EmployeeID = "EmployeeID";
+    case LeaveCategory = "LeaveCategory";
+    case UsedAllocations = "UsedAllocations";
+
+    /**From Leave_Application */
+    case StartDate = "StartDate";
+    case EndDate = "EndDate";
+    case LeaveStatus = "LeaveStatus";
+
+    /**From Employee */
+    case EmployeeName = "EmployeeName";
+    case EmployeeGrade = "EmployeeGrade";
+
+    /**From Grade_Allocation */
+    case Allocations = "Allocations";
+}
+
+class Employee_Allocation implements IteratorAggregate{
+    private $employeeallocation = [];
+    private mysqli $mysqli;
+
+    private function __construct(mysqli $mysqli, $employeeallocation = [])
+    {
+        $this->mysqli = $mysqli;
+        $this->employeeallocation = $employeeallocation;
+    }
+
+    /**Please fix this SQL Query later, the idea: all approved employee request leave but each row unique employee and their latest leave */
+    static function queryAllEmployeeAllocations(mysqli $mysqli){
+        $sql1 = "SELECT * FROM Leave_Application ";
+        $sql2 = "INNER JOIN Employee ON Employee.EmployeeID = Leave_Application.EmployeeID ";
+        $sql3 = "INNER JOIN Grade_Allocation ON Grade_Allocation.EmployeeGrade = Employee.EmployeeGrade AND Grade_Allocation.LeaveCategory = Leave_Application.LeaveCategory ";
+        $sql4 = "INNER JOIN Employee_Allocation ON Employee_Allocation.EmployeeID = Leave_Application.EmployeeID AND Employee_Allocation.LeaveCategory = Leave_Application.LeaveCategory ";
+        $sql5 = "WHERE Leave_Application.LeaveStatus = \"Approved\" GROUP BY Leave_Application.EmployeeID ORDER BY Leave_Application.EmployeeID DESC;";
+        $stmt_EmployeeAllocation = mysqli_prepare($mysqli, $sql1 . $sql2 . $sql3 . $sql4 . $sql5);
+        $approved = LeaveStatus::Approved->value;
+        #mysqli_stmt_bind_param($stmt_EmployeeAllocation, "s", $approved);
+        mysqli_stmt_execute($stmt_EmployeeAllocation);
+        $result = mysqli_stmt_get_result($stmt_EmployeeAllocation);
+        $_employeeallocation = [];
+        while ($row = mysqli_fetch_assoc($result)){
+            $_employeeallocation[] = $row;
+        }
+        return new Employee_Allocation($mysqli, $_employeeallocation);
+    }
+    
+    function getIterator(): Traversable {return new ArrayIterator($this->employeeallocation);}
+}
+
+class Leave_Application implements IteratorAggregate{
+    private $leaveapplications = [];
+    private mysqli $mysqli;
+
+    private function __construct(mysqli $mysqli, $leaveapplications = [])
+    {
+        $this->mysqli = $mysqli;
+        $this->leaveapplications = $leaveapplications;
+    }
+
+    static function queryAllLeaveApplication(mysqli $mysqli){
+        $stmt_LeaveApplication = mysqli_prepare($mysqli, "SELECT * FROM Leave_Application ". 
+        "INNER JOIN Employee ON Leave_Application.EmployeeID = Employee.EmployeeID WHERE Leave_Application.LeaveStatus = ?");
+        $pending = LeaveStatus::Pending->value;
+        mysqli_stmt_bind_param($stmt_LeaveApplication, "s", $pending);
+        mysqli_stmt_execute($stmt_LeaveApplication);
+        $result = mysqli_stmt_get_result($stmt_LeaveApplication);
+        $_leaveapplications = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $_leaveapplications[] = $row;
+        }
+        return new Leave_Application($mysqli, $_leaveapplications);
+    }
+
+    static function querySpecificEmployeeLeaveApplication(mysqli $mysqli, string $EmployeeID){
+        $stmt_LeaveApplication = mysqli_prepare($mysqli, "SELECT * FROM Leave_Application ". 
+        "INNER JOIN Employee ON Leave_Application.EmployeeID = Employee.EmployeeID WHERE Leave_Application". 
+        Leave_Application_Columns::EmployeeID->value ." = ?");
+        mysqli_stmt_bind_param($stmt_LeaveApplication, "s", $EmployeeID);
+        mysqli_stmt_execute($stmt_LeaveApplication);
+        $result = mysqli_stmt_get_result($stmt_LeaveApplication);
+        $_leaveapplications = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $_leaveapplications[] = $row;
+        }
+        return new Leave_Application($mysqli, $_leaveapplications);
+    }
+
+    static function setStatusEmployeeLeaveApplication(mysqli $mysqli, string $LeaveApplicationID, LeaveStatus $approvalstatus){
+        $stmt_LeaveApplication = mysqli_prepare($mysqli, "UPDATE Leave_Application SET". 
+        Leave_Application_Columns::LeaveStatus ." = (?)" . 
+        "WHERE Leave_Application." . Leave_Application_Columns::LeaveApplicationID->value . "= ?");
+        $_approvalstatus = $approvalstatus->value;
+        mysqli_stmt_bind_param($stmt_LeaveApplication, "ss", $_approvalstatus, $LeaveApplicationID);
+        $status = mysqli_stmt_execute($stmt_LeaveApplication);
+        return $status;
+    }
+
+    function getIterator(): Traversable {return new ArrayIterator($this->leaveapplications);}
+}
+
 class Grade_Allocation implements IteratorAggregate{
     private $gradeallocations = [];
     private string $leavetype;
     private mysqli $mysqli;
 
-    private function __construct(mysqli $mysqli, $gradeallocations = [], string $leavetype)
+    private function __construct(mysqli $mysqli, $gradeallocations, string $leavetype)
     {
         $this->mysqli = $mysqli;
         $this->gradeallocations = $gradeallocations;
@@ -326,6 +447,8 @@ class Account{
 
         return $status;
     }
+
+    function getUsername(){return $this->Username;}
 
     static function searchAccount_UsernamePassword(mysqli $mysqli,string $Username, string $Password){
         $stmt_Account = mysqli_prepare($mysqli, "SELECT * FROM Account WHERE Username = ? LIMIT 1");

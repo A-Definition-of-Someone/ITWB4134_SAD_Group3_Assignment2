@@ -1,4 +1,7 @@
 <?php 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require "DBModel.php";
 use Random\Randomizer; //php 8.2+
 ?>
@@ -11,7 +14,7 @@ $Username = "root";
 $Database = "LeaveManagement";
 $Host = "localhost";
 $Password = ""; 
-
+try {
 $mysqli = mysqli_connect($Host, $Username, $Password, $Database);
 mysqli_set_charset($mysqli, "utf8mb4");
 
@@ -81,6 +84,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST"){
         $login_state = 2;
         $login_status = "Improper Form Submission";
     }
+}
+} catch(mysqli_sql_exception $err){
+    die($err->getMessage());
+} catch (\Throwable $th) {
+    die($th);
 }
 
 

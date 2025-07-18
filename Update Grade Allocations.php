@@ -78,27 +78,4 @@ try {
     die($th);
 }
 
-/**
- * $json = '{"Amogus":[{"VAL1":"LOL", "VAL2":"LEL"}, {"VAL3":"WHAT", "VAL4":"POG"}]}';
- * print_r(json_decode($json, true));
- */
-/**
- * Array
- * (
- * [Amogus] => Array
- * (
- * [0] => Array
- * (
- * [VAL1] => LOL
- * [VAL2] => LEL
- * )
- * 
- * [1] => Array
- * (
- * [VAL3] => WHAT
- * [VAL4] => POG)
- * )
- * )
-
- */
 ?>
