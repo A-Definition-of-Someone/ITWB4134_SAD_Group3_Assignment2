@@ -60,13 +60,24 @@ class Employee_Allocation implements IteratorAggregate{
 
     /**Please fix this SQL Query later, the idea: all approved employee request leave but each row unique employee and their latest leave */
     static function queryAllEmployeeAllocations(mysqli $mysqli){
-        $sql1 = "SELECT * FROM Leave_Application ";
-        $sql2 = "INNER JOIN Employee ON Employee.EmployeeID = Leave_Application.EmployeeID ";
-        $sql3 = "INNER JOIN Grade_Allocation ON Grade_Allocation.EmployeeGrade = Employee.EmployeeGrade AND Grade_Allocation.LeaveCategory = Leave_Application.LeaveCategory ";
-        $sql4 = "INNER JOIN Employee_Allocation ON Employee_Allocation.EmployeeID = Leave_Application.EmployeeID AND Employee_Allocation.LeaveCategory = Leave_Application.LeaveCategory ";
-        $sql5 = "WHERE Leave_Application.LeaveStatus = \"Approved\" GROUP BY Leave_Application.EmployeeID ORDER BY Leave_Application.EmployeeID DESC;";
-        $stmt_EmployeeAllocation = mysqli_prepare($mysqli, $sql1 . $sql2 . $sql3 . $sql4 . $sql5);
         $approved = LeaveStatus::Approved->value;
+        $sql1 = <<< Q1
+        SELECT Employee.EmployeeGrade, Employee.EmployeeName, 
+        Leave_Application.LeaveCategory, Leave_Application.StartDate, 
+        Grade_Allocation.Allocations, Employee_Allocation.UsedAllocations, 
+        MAX(Leave_Application.EndDate) AS EndDate FROM Leave_Application 
+        Q1;
+        $sql2 = "INNER JOIN Employee ON Employee.EmployeeID = Leave_Application.EmployeeID ";
+        $sql3 = <<< Q3
+         INNER JOIN Grade_Allocation ON Grade_Allocation.EmployeeGrade = Employee.EmployeeGrade 
+        AND Grade_Allocation.LeaveCategory = Leave_Application.LeaveCategory
+        Q3;
+        $sql4 = <<< Q4
+         INNER JOIN Employee_Allocation ON Employee_Allocation.EmployeeID = Leave_Application.EmployeeID 
+        AND Employee_Allocation.LeaveCategory = Leave_Application.LeaveCategory 
+        Q4;
+        $sql5 = " WHERE Leave_Application.LeaveStatus = '$approved' GROUP BY Leave_Application.EmployeeID";
+        $stmt_EmployeeAllocation = mysqli_prepare($mysqli, $sql1 . $sql2 . $sql3 . $sql4 . $sql5);
         #mysqli_stmt_bind_param($stmt_EmployeeAllocation, "s", $approved);
         mysqli_stmt_execute($stmt_EmployeeAllocation);
         $result = mysqli_stmt_get_result($stmt_EmployeeAllocation);
