@@ -147,6 +147,19 @@ class Leave_Application implements IteratorAggregate{
         return $status;
     }
 
+    static function createEmployeeLeaveApplication(mysqli $mysqli, string $SentLeaveType, string $From, string $To, string $EmpID){
+        $sql1 = "INSERT INTO Leave_Application (EmployeeID, LeaveCategory, StartDate, EndDate, LeaveStatus) ";
+        $sql2 = "VALUES (?, ?, ?, ?, ?)";
+        $pending = LeaveStatus::Pending->value;
+        if(!$SentLeaveType or !$From or !$To or !$EmpID){
+            throw new Exception("Creating Employee Leave Application failed, empty inputs!", 1);
+        }
+        $stmt_LeaveApplication = mysqli_prepare($mysqli, $sql1 . $sql2);
+        mysqli_stmt_bind_param($stmt_LeaveApplication, "sssss", $EmpID, $SentLeaveType, $From, $To, $pending);
+        $status = mysqli_stmt_execute($stmt_LeaveApplication);
+        return $status;
+    }
+
     function getIterator(): Traversable {return new ArrayIterator($this->leaveapplications);}
 }
 
@@ -417,19 +430,20 @@ class Account{
     private string $Password;
     private string $Token;
     private Privilege $Privilege;
-    private Employee $Emp;
+    private ?Employee $Emp;
     private mysqli $mysqli;
 
     /***
      * Create Account
      */
-    private function __construct(mysqli $mysqli,string $Username, string $Password, string $Token, Privilege $Privilege)
+    private function __construct(mysqli $mysqli,string $Username, string $Password, string $Token, Privilege $Privilege, ?Employee $Emp)
     {
         $this->mysqli = $mysqli;
         $this->Token = $Token;
         $this->Privilege = $Privilege;
         $this->Username = $Username;
-        $this->Password = $Password;   
+        $this->Password = $Password;
+        $this->Emp = $Emp;   
     }
     
 
@@ -474,12 +488,13 @@ class Account{
         mysqli_stmt_bind_param($stmt_Account, "s", $Username);
         mysqli_stmt_execute($stmt_Account);
         mysqli_stmt_store_result($stmt_Account); #Store results before calling bind
-        mysqli_stmt_bind_result($stmt_Account,$Username, $Password2, $Token, $Privilege, $EmployeeGrade); #Prepare variables for binding
+        mysqli_stmt_bind_result($stmt_Account,$Username, $Password2, $Token, $Privilege, $EmployeeID); #Prepare variables for binding
 
         if(mysqli_stmt_num_rows($stmt_Account) > 0){
             mysqli_stmt_fetch($stmt_Account); #Fetch results into the variables declared for binding earlier
+            $emp = Employee::searchEmployee($mysqli, $EmployeeID, $Username);
             if (password_verify($Password, $Password2))
-            return new Account($mysqli, $Username, $Password2, $Token ?? "", Privilege::tryFrom($Privilege) ,$EmployeeGrade);
+            return new Account($mysqli, $Username, $Password2, $Token ?? "", Privilege::tryFrom($Privilege) , $emp);
         }
 
         return null;
@@ -490,11 +505,12 @@ class Account{
         mysqli_stmt_bind_param($stmt_Account, "s", $Token);
         mysqli_stmt_execute($stmt_Account);
         mysqli_stmt_store_result($stmt_Account); #Store results before calling bind
-        mysqli_stmt_bind_result($stmt_Account,$Username, $Password, $Token, $Privilege, $EmployeeGrade); #Prepare variables for binding
+        mysqli_stmt_bind_result($stmt_Account,$Username, $Password, $Token, $Privilege, $EmployeeID); #Prepare variables for binding
 
         if(mysqli_stmt_num_rows($stmt_Account) > 0){
             mysqli_stmt_fetch($stmt_Account); #Fetch results into the variables declared for binding earlier
-            return new Account($mysqli, $Username, $Password, $Token, Privilege::tryFrom($Privilege) ,$EmployeeGrade);
+            $emp = Employee::searchEmployee($mysqli, $EmployeeID, $Username);
+            return new Account($mysqli, $Username, $Password, $Token, Privilege::tryFrom($Privilege), $emp);
         }
 
         return null;
@@ -512,7 +528,7 @@ class Account{
             mysqli_stmt_bind_param($stmt_Account, "sss", $Username, $Password, $privilege);
             
             if (mysqli_stmt_execute($stmt_Account)){
-                $Acc = new Account($mysqli, $Username, $Password, $Token, $Privilege);
+                $Acc = new Account($mysqli, $Username, $Password, $Token, $Privilege, null);
             }
         }else{
             $stmt = "INSERT INTO Account (Username, `Password`, Token, Privilege) VALUES (?, ?, ?, ?)";
@@ -520,7 +536,7 @@ class Account{
             mysqli_stmt_bind_param($stmt_Account, "ssss", $Username, $Password, $Token, $privilege);
             
             if (mysqli_stmt_execute($stmt_Account)){
-                $Acc = new Account($mysqli, $Username, $Password, $Token, $Privilege);
+                $Acc = new Account($mysqli, $Username, $Password, $Token, $Privilege, null);
             }
         }
 

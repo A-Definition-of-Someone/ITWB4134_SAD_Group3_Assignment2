@@ -38,7 +38,7 @@ if (isset($_SESSION)){
                     header("Location: /ITWB4134_SAD_Group3_Assignment2/Manage Leave Type.php"); #Manager / HR first landing page
                     exit;
                 }
-                header("Location: /ITWB4134_SAD_Group3_Assignment2/Menu Template.html");
+                header("Location: /ITWB4134_SAD_Group3_Assignment2/Employee Leave Request.php");
                 exit;
             }
         }catch(mysqli_sql_exception $err){
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST"){
                     header("Location: /ITWB4134_SAD_Group3_Assignment2/Manage Leave Type.php"); #Manager / HR first landing page
                     exit;
                 }
-                header("Location: /ITWB4134_SAD_Group3_Assignment2/Menu Template.html");
+                header("Location: /ITWB4134_SAD_Group3_Assignment2/Employee Leave Request.php");
                 exit;
             }else{
                 $login_state = 2;

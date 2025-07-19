@@ -5,4 +5,9 @@
     <a href="/ITWB4134_SAD_Group3_Assignment2/Manage%20Leave%20Type.php">Manage Leave Type</a>
     <a href="/ITWB4134_SAD_Group3_Assignment2/Manage Leave - Leave Requests.php">Manage Employee Leave</a>
     XD;
+
+    $NavbarLinks_Normal = <<< 'YO'
+    <a href="/ITWB4134_SAD_Group3_Assignment2/Employee%20Leave%20Request.php">Request Leave</a>
+    <a href="/ITWB4134_SAD_Group3_Assignment2/Submit Leave Application.php">Leave Requests Status</a>
+    YO;
 ?>
