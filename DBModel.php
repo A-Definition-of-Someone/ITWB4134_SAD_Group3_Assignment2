@@ -126,7 +126,7 @@ class Leave_Application implements IteratorAggregate{
 
     static function querySpecificEmployeeLeaveApplication(mysqli $mysqli, string $EmployeeID){
         $stmt_LeaveApplication = mysqli_prepare($mysqli, "SELECT * FROM Leave_Application ". 
-        "INNER JOIN Employee ON Leave_Application.EmployeeID = Employee.EmployeeID WHERE Leave_Application". 
+        "INNER JOIN Employee ON Leave_Application.EmployeeID = Employee.EmployeeID WHERE Leave_Application.". 
         Leave_Application_Columns::EmployeeID->value ." = ?");
         mysqli_stmt_bind_param($stmt_LeaveApplication, "s", $EmployeeID);
         mysqli_stmt_execute($stmt_LeaveApplication);
@@ -363,6 +363,20 @@ class Grade implements IteratorAggregate{
         }
         $_Grade = new Grade($Grades);
         return $_Grade;
+    }
+
+    static function addGrade(mysqli $mysqli, string $grade){
+        $stmt_Grades = mysqli_prepare($mysqli, "INSERT INTO Grade (EmployeeGrade) VALUES (?)");
+        mysqli_stmt_bind_param($stmt_Grades, "s", $grade);
+        $status = mysqli_stmt_execute($stmt_Grades);
+        return $status;
+    }
+
+    static function removeGrade(mysqli $mysqli, string $grade){
+        $stmt_Grades = mysqli_prepare($mysqli, "DELETE FROM Grade WHERE EmployeeGrade = ?");
+        mysqli_stmt_bind_param($stmt_Grades, "s", $grade);
+        $status = mysqli_stmt_execute($stmt_Grades);
+        return $status;
     }
 
     function getIterator(): Traversable{return new ArrayIterator($this->Grades);}

@@ -233,7 +233,7 @@ if (mysqli_connect_errno()){
         <div id="LinkContainer">
             <?php echo $NavbarLinks; ?>
         </div>
-        <button id="LogOut" title="For convenience, this page is accessible also by root@localhost">Admin</button>
+        <button id="LogOut" title="For convenience, this page is accessible by anyone. Hence, no need for this button to log out">Admin</button>
     </nav>
     <form>
         <fieldset>
