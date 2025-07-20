@@ -56,7 +56,7 @@ try{
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Leave Type</title>
+    <title>Manage Grade</title>
     <link rel="stylesheet" href="CommonVariables.css">
     <link rel="stylesheet" href="Menu.css">
     <style>
