@@ -1,0 +1,168 @@
+form{
+    display: grid;
+    height: 90.7408dvh;
+    width: inherit;
+}
+form fieldset{
+    display: grid;
+    height: 38.8889dvh;
+    background-color: var(--LightGray);
+
+    /*Grid Configuration*/
+    place-self: center center;
+    row-gap: 4dvh;
+
+    /*Border*/
+    border: var(--BorderLighterLightGray);
+    border-radius: 25px 25px 25px 25px;
+
+    /*Padding*/
+    padding-top: 3dvh;
+    padding-bottom: 2dvh;
+    padding-right: 2dvw;
+    padding-left: 2dvw;
+}
+fieldset legend{
+    background-color: black;
+
+    /*Border*/
+    border: var(--BorderWhite);
+
+    /*Text*/
+    color: white;
+    text-align: center;
+
+    /*Font*/
+    font-family: var(--FontFamily);
+    font-size: var(--Header50PXApproximate);
+
+    /*Padding*/
+    padding-top: 1dvh;
+    padding-bottom: 1dvh;
+    padding-right: 2dvw;
+    padding-left: 2dvw;
+}
+
+#GradeRowContainer{
+    display: grid;
+    width: 100%;
+    height: fit-content;
+    max-height: 100%;
+
+    /*Grid Configuration*/
+    grid-auto-flow: row;
+    grid-auto-rows: min-content;
+    row-gap: 2dvh;
+
+    /*Scroll*/
+    overflow-y: auto;
+    scrollbar-width: thin;
+
+    /*Padding*/
+    padding-right: 0.5dvw;
+}
+
+.GradeRow{
+    display: grid;
+    height: min-content;
+    width: min-content;
+
+    /*Grid Configuration*/
+    grid-auto-flow: column;
+    grid-auto-columns: min-content;
+    column-gap: 1dvw;
+}
+
+.GradeName{
+    display: grid;
+    height: 7.4074dvh;
+    width: 40.1042dvw;
+    background-color: black;
+
+    /*Grid Config*/
+    place-content: center center;
+
+    /*Border*/
+    border: var(--BorderWhite);
+
+    /*Text*/
+    color: white;
+    text-align: center;
+
+    /*Font*/
+    font-family: var(--FontFamily);
+    font-size: var(--Header50PXApproximate);
+}
+
+.GradeRow button{
+    display: grid;
+    height: 7.4074dvh;
+    width: 4dvw;
+    background-color: black;
+
+    /*Grid config*/
+    place-content: center center;
+
+    /*Text*/
+    text-align: center;
+    color: red;
+
+    /*Font*/
+    font-family: var(--FontFamily);
+    font-size: var(--Header45PXApproximate);
+}
+
+.GradeRow button:nth-child(2){
+    line-height: 1dvh;
+}
+
+#AddGradeRow{
+    display: grid;
+    height: min-content;
+    width: min-content;
+
+    /*Grid Configuration*/
+    grid-auto-flow: column;
+    grid-auto-columns: min-content;
+    column-gap: 1dvw;
+}
+
+#AddGradeRow span{
+    display: grid;
+    height: 7.4074dvh;
+    width: 40.1042dvw;
+    background-color: var(--DarkerBlue);
+
+    /*Grid Config*/
+    place-content: center center;
+
+    /*Border*/
+    border: var(--BorderLighterDarkerBlue);
+
+    /*Text*/
+    color: white;
+    text-align: center;
+
+    /*Font*/
+    font-family: var(--FontFamily);
+    font-size: var(--Header50PXApproximate);
+}
+
+#AddGradeRow button{
+    display: grid;
+    height: 7.4074dvh;
+    width: 4dvw;
+    background-color: black;
+
+    /*Grid config*/
+    place-content: center center;
+
+    /*Text*/
+    text-align: center;
+    color: var(--DarkGreen);
+
+    /*Font*/
+    font-family: var(--FontFamily);
+    font-size: var(--Header60PXApproximate);
+    font-weight: bold;
+}

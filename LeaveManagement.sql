@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jul 20, 2025 at 02:48 AM
+-- Generation Time: Jul 30, 2025 at 05:40 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -40,8 +40,9 @@ CREATE TABLE `Account` (
 --
 
 INSERT INTO `Account` (`Username`, `Password`, `Token`, `Privilege`, `EmployeeID`) VALUES
-('HEY', '$2y$10$LXiW1ye3duOgkAs41l8U7OFyKsrtqlXM2O7NDJAUbQnuNivYr3j2a', 'NULL', 'Normal', '4w36reg5lpoczxvdfqsmhbk0n8a9yiu71tj2'),
-('HR', '$2y$10$ZbUY9YNXHs6eZuDZrCOpwuotODL4VUUHpYLjw/DuVbEdGTbnA8YTq', '7ijcxh2mybasq6u1938ntwfl5odkg4rez🌑🌕vp0', 'Manager', 'n8vz2dml6xa3fr4e19sc0pgtuyow5qibjhk7');
+('HEY', '$2y$10$mpowxJvhBN.qOAxiq8fkAuvAUSY.k8wR0fsw7qqO6ocxlNePwF142', 'NULL', 'Normal', 'qv25tnkejyl8ri4zmphu67bdfw1c03sx9oga'),
+('HR', '$2y$10$bXwLGhxF/5v/z8fl/.HdVO81r5MfVnzY2BfD9yzJ0QuLB4RnAg7bW', '🌑s7wae20lzu🌕nfp5dbt49jhx61mgoq8kvic3ry', 'Manager', 'zvknj28go9d1ca06rpwbhfx73qity5u4mels'),
+('YO', '$2y$10$FZD1NxgWIQ.sqdr2MbPxf.VJMAV3IOym9ovW/5XnfHal5yVEIdEU2', 'NULL', 'Normal', 'vtyu62cebaqopixn9z3h1f4d5ml8kg0wj7rs');
 
 -- --------------------------------------------------------
 
@@ -60,8 +61,9 @@ CREATE TABLE `Employee` (
 --
 
 INSERT INTO `Employee` (`EmployeeID`, `EmployeeName`, `EmployeeGrade`) VALUES
-('4w36reg5lpoczxvdfqsmhbk0n8a9yiu71tj2', 'HEY', 'Test'),
-('n8vz2dml6xa3fr4e19sc0pgtuyow5qibjhk7', 'HR', 'Manager');
+('qv25tnkejyl8ri4zmphu67bdfw1c03sx9oga', 'HEY', 'Grade 1'),
+('vtyu62cebaqopixn9z3h1f4d5ml8kg0wj7rs', 'YO', 'Grade 2'),
+('zvknj28go9d1ca06rpwbhfx73qity5u4mels', 'HR', 'Grade 1');
 
 -- --------------------------------------------------------
 
@@ -80,8 +82,8 @@ CREATE TABLE `Employee_Allocation` (
 --
 
 INSERT INTO `Employee_Allocation` (`EmployeeID`, `UsedAllocations`, `LeaveCategory`) VALUES
-('4w36reg5lpoczxvdfqsmhbk0n8a9yiu71tj2', 1, 'Education'),
-('n8vz2dml6xa3fr4e19sc0pgtuyow5qibjhk7', 3, 'Education');
+('qv25tnkejyl8ri4zmphu67bdfw1c03sx9oga', 2, 'Emergency'),
+('vtyu62cebaqopixn9z3h1f4d5ml8kg0wj7rs', 2, 'For Fun');
 
 -- --------------------------------------------------------
 
@@ -98,9 +100,10 @@ CREATE TABLE `Grade` (
 --
 
 INSERT INTO `Grade` (`EmployeeGrade`) VALUES
-('Grade 9'),
-('Manager'),
-('Test');
+('Grade 1'),
+('Grade 2'),
+('Grade 3'),
+('Grade 4');
 
 -- --------------------------------------------------------
 
@@ -120,11 +123,14 @@ CREATE TABLE `Grade_Allocation` (
 --
 
 INSERT INTO `Grade_Allocation` (`GradeAllocationID`, `EmployeeGrade`, `Allocations`, `LeaveCategory`) VALUES
-(1, 'Manager', 5, 'Education'),
-(2, 'Test', 2, 'Education'),
-(3, 'Manager', 10, 'Emergency'),
-(4, 'Test', 4, 'Emergency'),
-(5, 'Grade 9', 0, 'Education');
+(16, 'Grade 1', 2, 'Emergency'),
+(17, 'Grade 2', 0, 'Emergency'),
+(19, 'Grade 3', 2, 'Emergency'),
+(20, 'Grade 4', 4, 'Emergency'),
+(21, 'Grade 1', 0, 'For Fun'),
+(22, 'Grade 2', 2, 'For Fun'),
+(23, 'Grade 3', 0, 'For Fun'),
+(24, 'Grade 4', 0, 'For Fun');
 
 -- --------------------------------------------------------
 
@@ -141,8 +147,8 @@ CREATE TABLE `LeaveType` (
 --
 
 INSERT INTO `LeaveType` (`LeaveCategory`) VALUES
-('Education'),
-('Emergency');
+('Emergency'),
+('For Fun');
 
 -- --------------------------------------------------------
 
@@ -164,15 +170,10 @@ CREATE TABLE `Leave_Application` (
 --
 
 INSERT INTO `Leave_Application` (`LeaveApplicationID`, `EmployeeID`, `LeaveCategory`, `StartDate`, `EndDate`, `LeaveStatus`) VALUES
-(1, 'n8vz2dml6xa3fr4e19sc0pgtuyow5qibjhk7', 'Education', '2025-07-01', '2025-07-25', 'Approved'),
-(2, 'n8vz2dml6xa3fr4e19sc0pgtuyow5qibjhk7', 'Emergency', '2025-07-29', '2025-07-30', 'Approved'),
-(3, 'n8vz2dml6xa3fr4e19sc0pgtuyow5qibjhk7', 'Education', '2025-07-30', '2025-07-31', 'Approved'),
-(4, 'n8vz2dml6xa3fr4e19sc0pgtuyow5qibjhk7', 'Education', '2025-07-15', '2025-07-24', 'Approved'),
-(5, '4w36reg5lpoczxvdfqsmhbk0n8a9yiu71tj2', 'Education', '2025-07-15', '2025-07-16', 'Approved'),
-(6, '4w36reg5lpoczxvdfqsmhbk0n8a9yiu71tj2', 'Emergency', '2025-07-23', '2025-07-31', 'Pending'),
-(7, '4w36reg5lpoczxvdfqsmhbk0n8a9yiu71tj2', 'Emergency', '2025-07-01', '2025-07-15', 'Pending'),
-(8, '4w36reg5lpoczxvdfqsmhbk0n8a9yiu71tj2', 'Education', '2025-07-02', '2025-07-11', 'Pending'),
-(9, '4w36reg5lpoczxvdfqsmhbk0n8a9yiu71tj2', 'Emergency', '2025-07-27', '2025-07-28', 'Pending');
+(12, 'qv25tnkejyl8ri4zmphu67bdfw1c03sx9oga', 'Emergency', '2025-07-23', '2025-07-24', 'Approved'),
+(13, 'qv25tnkejyl8ri4zmphu67bdfw1c03sx9oga', 'Emergency', '2025-07-30', '2025-07-31', 'Approved'),
+(14, 'vtyu62cebaqopixn9z3h1f4d5ml8kg0wj7rs', 'For Fun', '2025-07-01', '2025-07-31', 'Approved'),
+(15, 'vtyu62cebaqopixn9z3h1f4d5ml8kg0wj7rs', 'For Fun', '2025-07-30', '2025-07-31', 'Approved');
 
 --
 -- Indexes for dumped tables
@@ -235,13 +236,13 @@ ALTER TABLE `Leave_Application`
 -- AUTO_INCREMENT for table `Grade_Allocation`
 --
 ALTER TABLE `Grade_Allocation`
-  MODIFY `GradeAllocationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `GradeAllocationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `Leave_Application`
 --
 ALTER TABLE `Leave_Application`
-  MODIFY `LeaveApplicationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `LeaveApplicationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables

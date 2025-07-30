@@ -1,0 +1,204 @@
+form{
+    display: grid;
+    height: 90.7408dvh;
+    width: inherit;
+}
+form fieldset{
+    display: grid;
+    background-color: var(--LightGray);
+    
+    /*Grid Configuration*/
+    grid-auto-rows: min-content;
+    place-self: center center;
+    row-gap: 1.5dvh;
+
+    /*Border*/
+    border: var(--BorderLighterLightGray);
+    border-radius: 25px 25px 25px 25px;
+
+    /*Padding*/
+    padding-top: 3dvh;
+    padding-bottom: 2dvh;
+    padding-right: 2dvw;
+    padding-left: 2dvw;
+}
+
+fieldset legend{
+    background-color: black;
+    
+    /*Border*/
+    border: var(--BorderWhite);
+    
+    /*Text*/
+    color: white;
+    text-align: center;
+
+    /*Font*/
+    font-family: var(--FontFamily);
+    font-size: var(--Header50PXApproximate);
+    
+    /*Padding*/
+    padding-top: 1dvh;
+    padding-bottom: 1dvh;
+    padding-right: 2dvw;
+    padding-left: 2dvw;
+}
+
+
+.AccountFieldRow{
+    display: grid;
+    height: min-content;
+    width: min-content;
+
+    /*Grid Configuration*/
+    grid-auto-flow: column;
+    grid-auto-columns: min-content;
+    column-gap: 1dvw;
+}
+
+.AccountFieldLabel{
+    display: grid;
+    height: 7.4074dvh;
+    width: 14.0625dvw;
+    background-color: black;
+
+    /*Grid Config*/
+    place-content: center center;
+
+    /*Border*/
+    border: var(--BorderWhite);
+
+    /*Text*/
+    color: white;
+    text-align: center;
+
+    /*Font*/
+    font-family: var(--FontFamily);
+    font-size: var(--Header50PXApproximate);
+}
+
+.AccountTextInputField{
+    display: grid;
+    height: 7.4074dvh;
+    width: 42.1875dvw;
+    background-color: black;
+
+    /*Grid Config*/
+    place-content: center center;
+
+    /*Border*/
+    border: var(--BorderWhite);
+    border-radius: 15px 15px 15px 15px;
+
+    /*Text*/
+    color: white;
+    text-align: center;
+
+    /*Font*/
+    font-family: var(--FontFamily);
+    font-size: var(--Header50PXApproximate);
+}
+
+select{
+    height: 7.4074dvh;
+    width: 57.8dvw;
+    background-color: black;
+
+    /*Border*/
+    border: var(--BorderWhite);
+    border-radius: 15px 15px 15px 15px;
+
+    /*Text*/
+    color: white;
+    text-align: left;
+
+    /*Font*/
+    font-family: var(--FontFamily);
+    font-size: var(--Header50PXApproximate);
+
+    /*Padding*/
+    padding-left: 0.5dvw;
+    padding-right: 0.5dvw;
+}
+
+#Error[data-status="0"]{
+    display: none;
+    visibility: hidden;
+    width: 0;
+    height: 0;
+}
+
+#Error[data-status="1"]{
+    display: grid;
+    height: 7.4074dvh;
+    width: 57.8dvw;
+    background-color: var(--LightGreen);
+
+    /*Grid Config*/
+    place-content: center center;
+
+    /*Border*/
+    border: var(--BorderDarkGreen);
+    border-radius: 15px 15px 15px 15px;
+
+    /*Text*/
+    color: white;
+    text-align: left;
+
+    /*Font*/
+    font-family: var(--FontFamily);
+    font-size: var(--Header50PXApproximate);
+
+    /*Padding*/
+    padding-left: 0.5dvw;
+    padding-right: 0.5dvw;
+}
+
+#Error[data-status="2"]{
+    display: grid;
+    height: 7.4074dvh;
+    width: 57.8dvw;
+    background-color: var(--LighterOrange);
+
+    /*Grid Config*/
+    place-content: center center;
+
+    /*Border*/
+    border: var(--BorderOrange);
+    border-radius: 15px 15px 15px 15px;
+
+    /*Text*/
+    color: white;
+    text-align: left;
+
+    /*Font*/
+    font-family: var(--FontFamily);
+    font-size: var(--Header50PXApproximate);
+
+    /*Padding*/
+    padding-left: 0.5dvw;
+    padding-right: 0.5dvw;
+}
+
+#Save{
+    display: grid;
+    height: 10.1852dvh;
+    width: 11.5885dvw;
+    background-color: var(--DarkerBlue);
+
+    /*Grid Configuration*/
+    place-content: center center;
+    place-self: center center;
+
+    /*Text*/
+    color: white;
+
+    /*Font*/
+    font-family: var(--FontFamily);
+    font-size: var(--Header50PXApproximate);
+    font-weight: bold;
+
+    /*Border*/
+    border-color: #5C79A3;
+    border-radius: 20px 20px 20px 20px;
+}
