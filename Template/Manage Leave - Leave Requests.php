@@ -198,12 +198,14 @@ U = Used Leave Allocation</pre>
 
         async function reloadApprovedLeaveList(){
             const url = "../Database Operations/Query Approved Leave List.php";
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                method: "POST"
+            });
 
             const jsonObject = await response.json();
+            console.log("reload: " + jsonObject);
             
-            let newApprovedRow = Array.from(jsonObject.Rows || []);
-            console.log("reload: " + jsonObject.Rows[0].EmployeeGrade);
+            let newApprovedRow = Array.from(jsonObject["Rows"] || []);
             
             if(newApprovedRow.length > 0){//Refresh list for approved leave
                 let ListEmployeesLeave_Approved = Array.from(document.querySelectorAll(".ListEmployeesLeave[data-mode = '1']") || []);
@@ -218,6 +220,7 @@ U = Used Leave Allocation</pre>
             }else if (jsonObject.Status !== undefined || jsonObject.Status !== NULL){
                 alert(jsonObject.Status);
             }
+                
                 
         }
 
