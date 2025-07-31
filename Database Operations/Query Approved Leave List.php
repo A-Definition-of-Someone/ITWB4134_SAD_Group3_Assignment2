@@ -4,18 +4,24 @@
  * Check if this file is accessed through GET or POST
  */
 if ($_SERVER["REQUEST_METHOD"] !== "POST" || !isset($_SESSION)){
-    die("Error: Session or POST is not set!");
+    die(json_encode(array(
+        "Status" => "Error: Session or POST is not set!"
+    )));
 }
 
 if (!isset($_SESSION["Token"])){
-    die("Error: No Token");
+    die(json_encode(array(
+        "Status" => "Error: No Token" 
+    )));
 }
 
 $Token = $_SESSION["Token"];
 $Acc = Account::TryCatch(Account::getAccount_usingToken(...), $mysqli, $Token);
 
 if(!$Acc){
-    die("Error: Not Logged In");
+    die(json_encode(array(
+        "Status" => "Error: Not Logged In" 
+    )));
 }
 
 $employeeallocations = EmployeeAllocation::TryCatch(EmployeeAllocation::queryAllEmployeeAllocations(...), $mysqli);
