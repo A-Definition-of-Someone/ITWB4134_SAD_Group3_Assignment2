@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jul 30, 2025 at 05:40 PM
+-- Generation Time: Jul 31, 2025 at 02:22 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,7 +41,7 @@ CREATE TABLE `Account` (
 
 INSERT INTO `Account` (`Username`, `Password`, `Token`, `Privilege`, `EmployeeID`) VALUES
 ('HEY', '$2y$10$mpowxJvhBN.qOAxiq8fkAuvAUSY.k8wR0fsw7qqO6ocxlNePwF142', 'NULL', 'Normal', 'qv25tnkejyl8ri4zmphu67bdfw1c03sx9oga'),
-('HR', '$2y$10$bXwLGhxF/5v/z8fl/.HdVO81r5MfVnzY2BfD9yzJ0QuLB4RnAg7bW', '🌑s7wae20lzu🌕nfp5dbt49jhx61mgoq8kvic3ry', 'Manager', 'zvknj28go9d1ca06rpwbhfx73qity5u4mels'),
+('HR', '$2y$10$bXwLGhxF/5v/z8fl/.HdVO81r5MfVnzY2BfD9yzJ0QuLB4RnAg7bW', 'NULL', 'Manager', 'zvknj28go9d1ca06rpwbhfx73qity5u4mels'),
 ('YO', '$2y$10$FZD1NxgWIQ.sqdr2MbPxf.VJMAV3IOym9ovW/5XnfHal5yVEIdEU2', 'NULL', 'Normal', 'vtyu62cebaqopixn9z3h1f4d5ml8kg0wj7rs');
 
 -- --------------------------------------------------------
@@ -76,14 +76,6 @@ CREATE TABLE `Employee_Allocation` (
   `UsedAllocations` int(11) NOT NULL DEFAULT 1,
   `LeaveCategory` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Stores allocations to an employee in a leave type';
-
---
--- Dumping data for table `Employee_Allocation`
---
-
-INSERT INTO `Employee_Allocation` (`EmployeeID`, `UsedAllocations`, `LeaveCategory`) VALUES
-('qv25tnkejyl8ri4zmphu67bdfw1c03sx9oga', 2, 'Emergency'),
-('vtyu62cebaqopixn9z3h1f4d5ml8kg0wj7rs', 2, 'For Fun');
 
 -- --------------------------------------------------------
 
@@ -166,16 +158,6 @@ CREATE TABLE `Leave_Application` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Stores leave categories';
 
 --
--- Dumping data for table `Leave_Application`
---
-
-INSERT INTO `Leave_Application` (`LeaveApplicationID`, `EmployeeID`, `LeaveCategory`, `StartDate`, `EndDate`, `LeaveStatus`) VALUES
-(12, 'qv25tnkejyl8ri4zmphu67bdfw1c03sx9oga', 'Emergency', '2025-07-23', '2025-07-24', 'Approved'),
-(13, 'qv25tnkejyl8ri4zmphu67bdfw1c03sx9oga', 'Emergency', '2025-07-30', '2025-07-31', 'Approved'),
-(14, 'vtyu62cebaqopixn9z3h1f4d5ml8kg0wj7rs', 'For Fun', '2025-07-01', '2025-07-31', 'Approved'),
-(15, 'vtyu62cebaqopixn9z3h1f4d5ml8kg0wj7rs', 'For Fun', '2025-07-30', '2025-07-31', 'Approved');
-
---
 -- Indexes for dumped tables
 --
 
@@ -236,7 +218,7 @@ ALTER TABLE `Leave_Application`
 -- AUTO_INCREMENT for table `Grade_Allocation`
 --
 ALTER TABLE `Grade_Allocation`
-  MODIFY `GradeAllocationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `GradeAllocationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `Leave_Application`
