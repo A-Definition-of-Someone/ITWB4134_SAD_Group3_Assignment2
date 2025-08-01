@@ -34,7 +34,7 @@ Manager is a hardcoded role in the system which allows one to:
 2) Add / Delete Leave Type
 3) Add / Delete Grade
 
-# Employee Registration (URL: http://localhost/ITWB4134_SAD_Group3_Assignment2/Register%20Employee%20Page.php)
+# Employee Registration (URL: http://localhost/ITWB4134_SAD_Group3_Assignment2/Admin - Register Employee.php)
 For convenience, employee registration is not locked behind accounts, just in case HR account is deleted.
 
 # Start Accessing the system
