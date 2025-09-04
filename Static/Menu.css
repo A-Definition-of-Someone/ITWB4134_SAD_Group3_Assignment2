@@ -1,0 +1,114 @@
+        html, body{
+            /*Margin*/
+            margin: 0;
+
+            /*Padding*/
+            padding: 0;
+        }
+
+        body{
+            display: grid;
+            height: 100dvh;
+            width: 100dvw;
+            
+            background-color: var(--DarkGray);
+
+            /*Grid Config*/
+            grid-auto-rows: min-content;
+
+            /*Font*/
+            font-family: var(--FontFamily);
+        }
+
+        #Navbar{
+            display: grid;
+            height: 9.2592dvh;
+            width: inherit;
+            background-color: var(--LightGray);
+
+            /*Grid Configuration*/
+            grid-template-rows: 100%;
+            grid-template-columns: 1fr min-content;
+            grid-auto-flow: column;
+            column-gap: 1.5dvw;
+
+            /*Font*/
+            font-size: var(--FontSizeNavbar);
+
+            /*Padding*/
+            padding-right: 1dvw;
+            padding-left: 1dvw;
+
+            /*Boder*/
+            box-sizing: border-box;
+        }
+
+        #Navbar #LinkContainer{
+            display: grid;
+
+            /*Grid Configuration*/
+            grid-template-rows: 100%;
+            grid-auto-columns: min-content;
+            grid-auto-flow: column;
+            column-gap: 1dvw;
+        }
+
+        #LinkContainer a{
+            width: fit-content;
+            height: fit-content;
+            background-color: var(--SalmonPink);
+
+            /*Grid Config*/
+            place-self: center center;
+
+            /*Text*/
+            text-wrap: nowrap;
+            text-decoration: none;
+            color: black;
+
+            /*Border*/
+            border-radius: 10px 10px 10px 10px;
+
+            /*Font*/
+            font-size: var(--FontSizeNavbar);
+            font-weight: bold;
+
+            /*Padding*/
+            padding-top: 1dvh;
+            padding-bottom: 1dvh;
+            padding-left: 1.5dvw;
+            padding-right: 1.5dvw;
+        }
+
+        #LinkContainer a:hover{
+            background-color: white;
+        }
+
+        #LogOut{
+            height: fit-content;
+            background-color: var(--DarkerBlue);
+
+            /*Grid Config*/
+            place-self: center center;
+
+            /*Text*/
+            text-wrap: nowrap;
+            color: white;
+
+            /*Border*/
+            border-color: var(--SlightBlue);
+            border-radius: 10px 10px 10px 10px;
+
+            /*Font*/
+            font-size: var(--FontSizeNavbar);
+            font-weight: bold;
+
+            /*Padding*/
+            padding-top: 1dvh;
+            padding-bottom: 1dvh;
+            padding-left: 1.5dvw;
+            padding-right: 1.5dvw;
+
+            /*Cursor*/
+            cursor: pointer;
+        }
